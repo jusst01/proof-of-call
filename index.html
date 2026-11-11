@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proof of Call — verifiable track records for alpha callers, on NEAR</title>
+<meta name="description" content="Callers register trading calls on-chain before the move; an oracle fetches the real entry price from DexScreener and scores every call at 15m / 1h / 6h / 24h. Permanent, unforgeable track records.">
+<link rel="stylesheet" href="app/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">📣</div>
+    <div>
+      <h1>Proof of Call</h1>
+      <p class="tagline">Don’t trust callers. <b>Verify them.</b></p>
+    </div>
+  </div>
+  <div id="walletBox" class="walletbox"></div>
+</header>
+
+<main>
+  <section class="hero">
+    <p class="lede">Alpha callers delete their misses, edit their calls, and screenshot only the wins.
+      Proof of Call ends that: a caller registers a call <b>on-chain, before the move</b> — the block
+      timestamp can’t be forged. An oracle fetches the entry price from DexScreener (the caller never
+      types it) and scores the call at <b>15m / 1h / 6h / 24h</b>. Wins <i>and</i> losses stay on the record, forever.</p>
+    <div id="heroStats" class="statgrid"></div>
+    <p id="loadState" class="hint">Loading on-chain records from NEAR testnet…</p>
+    <div class="headline-stat">
+      The record below already holds a real channel’s history — and it is not flattering:
+      at the 24h horizon, only <b>3 of the first 24 tracked calls won</b>.
+      That is the point. Proof cuts both ways.
+    </div>
+  </section>
+
+  <section id="leaderboardSec">
+    <h2>🏆 Caller leaderboard</h2>
+    <div id="leaderboard"><p class="hint">Loading…</p></div>
+  </section>
+
+  <section id="profile">
+    <h2>👤 Caller profile</h2>
+    <div id="profileBody"><p class="hint">Loading…</p></div>
+  </section>
+
+  <section id="register">
+    <h2>📣 Register a call</h2>
+    <form id="regForm" class="regform">
+      <label>Chain
+        <select id="fChain">
+          <option value="solana">Solana</option>
+          <option value="bsc">BSC</option>
+          <option value="ethereum">Ethereum</option>
+          <option value="base">Base</option>
+          <option value="robinhood">Robinhood Chain</option>
+        </select>
+      </label>
+      <label>Token contract / mint address
+        <input id="fToken" type="text" placeholder="e.g. DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263" autocomplete="off" spellcheck="false">
+      </label>
+      <label>Direction
+        <select id="fDirection">
+          <option value="long">Long</option>
+          <option value="short">Short</option>
+        </select>
+      </label>
+      <button id="regSubmit" type="submit" disabled>Register call on-chain</button>
+    </form>
+    <p id="regNote" class="hint"></p>
+    <p id="regMsg" class="regmsg"></p>
+    <div class="notice">
+      <b>What happens next:</b> the contract stores your account + the block timestamp and mints you a
+      receipt NFT (<code>call-&lt;id&gt;</code>). You never enter a price — the <b>oracle</b> fetches the entry
+      price from DexScreener and writes it, then records the outcome at 15m, 1h, 6h and 24h.
+      A short profits when the price falls; a long when it rises. The record cannot be edited or deleted — by anyone.
+    </div>
+  </section>
+
+  <section id="feedSec">
+    <h2>📰 Recent calls</h2>
+    <div id="feed" class="calls"><p class="hint">Loading…</p></div>
+  </section>
+
+  <section id="verify">
+    <h2>🔍 How it works — and how to verify everything</h2>
+    <ol class="how">
+      <li><b>Register.</b> The caller signs <code>register_call(chain, token_ref, direction)</code>. The contract stores the signer and the block timestamp. That pair is the proof the call existed, then.</li>
+      <li><b>Entry price.</b> Set only by the oracle, fetched from DexScreener at registration time and stored <b>verbatim</b> — compare it against the public source tick-for-tick.</li>
+      <li><b>Scoring.</b> At fixed horizons — 15m / 1h / 6h / 24h, no discretion — the oracle records the exit price (verbatim) and the return in basis points from the caller’s perspective. One outcome per horizon, append-only.</li>
+      <li><b>Receipt.</b> Every call mints one receipt NFT to the caller at registration: portable proof of <i>when</i> the call was made.</li>
+      <li><b>Recompute it yourself.</b> Every number on this page is a view call against one public contract. Take any stored entry/exit price pair and the direction — the return is arithmetic anyone can redo.</li>
+    </ol>
+    <p class="verify-links">
+      Contract: <a href="https://testnet.nearblocks.io/address/proofofcall.opengraspdev.testnet" target="_blank" rel="noopener"><code>proofofcall.opengraspdev.testnet</code></a> (NEAR testnet) ·
+      Owner: <code>jusst1.testnet</code> · Oracle: <code>opengraspdev.testnet</code> ·
+      Source + oracle code: <a href="https://github.com/jusst01/proof-of-call" target="_blank" rel="noopener">github.com/jusst01/proof-of-call</a>
+    </p>
+    <div class="notice">
+      <b>About the imported record:</b> the profile labelled “Pumpfun Callouts” is that Telegram channel’s real
+      track record, imported on-chain on 2026-11-11 from a live listener + DexScreener tracker running since
+      2026-11-03 — imported history, clearly labelled, <b>not</b> live-registered calls. The BONK call (#24) was
+      registered live end-to-end (wallet → contract → oracle entry → scoring) as the working proof.
+    </div>
+  </section>
+
+  <footer>
+    <p>Proof of Call — built for the NEAR Hackathon (tracks: social + open). Testnet: calling is free, the record is real.
+      Screenshots are not evidence. <b>Show me your Proof of Call.</b></p>
+  </footer>
+</main>
+
+<script src="app/wallet.js"></script>
+<script src="app/app.js"></script>
+</body>
+</html>

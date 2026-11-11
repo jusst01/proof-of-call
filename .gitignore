@@ -1,0 +1,3 @@
+contract/target/
+oracle/__pycache__/
+*.pyc

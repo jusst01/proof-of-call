@@ -1,0 +1,730 @@
+{
+ "provenance": {
+  "source": "tg-tracker.service on VPS .102 (100.106.224.75), /root/tg-listener/paper.jsonl",
+  "local_copy": "paper-source.jsonl (read-only pull, 2026-11-11)",
+  "channel": "Pumpfun Callouts (tracked since 2026-11-03)",
+  "note": "Historical records imported for the demo. On-chain registered_at is the import time, not the original call time (kept here as first_seen_ts). Prices/outcomes are the tracker's real recorded DexScreener snapshots."
+ },
+ "calls": [
+  {
+   "msg_id": 6602,
+   "token_ref": "0x44c72166408e2Dd903CF0775CAa8dbDD77147777",
+   "chain": "bsc",
+   "direction": "long",
+   "first_seen_ts": 1793782627,
+   "entry_price": "0.000005305",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.000004264",
+     "return_bps": -1962
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.000003916",
+     "return_bps": -2618
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.00000391",
+     "return_bps": -2630
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.000003987",
+     "return_bps": -2484
+    }
+   ]
+  },
+  {
+   "msg_id": 6603,
+   "token_ref": "0x8De39B057CC6522230AB19C0205080a8663331Ef",
+   "chain": "ethereum",
+   "direction": "long",
+   "first_seen_ts": 1793784509,
+   "entry_price": "0.00000004827",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.00000004833",
+     "return_bps": 12
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.00000004965",
+     "return_bps": 286
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.0000000499",
+     "return_bps": 338
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.00000004771",
+     "return_bps": -116
+    }
+   ]
+  },
+  {
+   "msg_id": 6605,
+   "token_ref": "0x9CB6a9859Faa69c7374166b1383c7b4Ddea71111",
+   "chain": "robinhood",
+   "direction": "long",
+   "first_seen_ts": 1793788830,
+   "entry_price": "0.00008053",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.00008053",
+     "return_bps": 0
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.00008117",
+     "return_bps": 79
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.00009292",
+     "return_bps": 1539
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.0000195",
+     "return_bps": -7579
+    }
+   ]
+  },
+  {
+   "msg_id": 6608,
+   "token_ref": "0xA4Cd53f32336f820E787C25AAa2dF64Aa0A64444",
+   "chain": "bsc",
+   "direction": "long",
+   "first_seen_ts": 1793796368,
+   "entry_price": "0.000005756",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.000005544",
+     "return_bps": -368
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.000005744",
+     "return_bps": -21
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.000005203",
+     "return_bps": -961
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.000005414",
+     "return_bps": -594
+    }
+   ]
+  },
+  {
+   "msg_id": 6611,
+   "token_ref": "0x58B2931F2Bf31d2A6299E4F987C1d7ac6a967777",
+   "chain": "bsc",
+   "direction": "long",
+   "first_seen_ts": 1793798265,
+   "entry_price": "0.00007063",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.0000356",
+     "return_bps": -4960
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.000029",
+     "return_bps": -5894
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.000009638",
+     "return_bps": -8635
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.000004757",
+     "return_bps": -9326
+    }
+   ]
+  },
+  {
+   "msg_id": 6614,
+   "token_ref": "0xB1C3a6ac90E324c4072aD4B2a71c5d9382F9565c",
+   "chain": "base",
+   "direction": "long",
+   "first_seen_ts": 1793800781,
+   "entry_price": "0.0000008769",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.0000008264",
+     "return_bps": -576
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.000001329",
+     "return_bps": 5156
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.00000162",
+     "return_bps": 8474
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.000001136",
+     "return_bps": 2955
+    }
+   ]
+  },
+  {
+   "msg_id": 6617,
+   "token_ref": "0xB1C3a6ac90E324c4072aD4B2a71c5d9382F9565c",
+   "chain": "base",
+   "direction": "long",
+   "first_seen_ts": 1793803207,
+   "entry_price": "0.000002036",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.000001726",
+     "return_bps": -1523
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.000001504",
+     "return_bps": -2613
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.000001886",
+     "return_bps": -737
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.000001282",
+     "return_bps": -3703
+    }
+   ]
+  },
+  {
+   "msg_id": 6620,
+   "token_ref": "0xEf50274Cfe89D3BBddD52544f2f1a0EF15a3259f",
+   "chain": "robinhood",
+   "direction": "long",
+   "first_seen_ts": 1793809125,
+   "entry_price": "0.0003575",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.0002684",
+     "return_bps": -2492
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.0003224",
+     "return_bps": -982
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.0002301",
+     "return_bps": -3564
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.0002821",
+     "return_bps": -2109
+    }
+   ]
+  },
+  {
+   "msg_id": 6624,
+   "token_ref": "0x63b5C2B1eB93Ad62EA06560370f4f317eE1b97D3",
+   "chain": "robinhood",
+   "direction": "long",
+   "first_seen_ts": 1793811294,
+   "entry_price": "0.0001247",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.0001171",
+     "return_bps": -609
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.00006264",
+     "return_bps": -4977
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.00003109",
+     "return_bps": -7507
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.000008232",
+     "return_bps": -9340
+    }
+   ]
+  },
+  {
+   "msg_id": 6629,
+   "token_ref": "0x1b54E762aa34CF6E28E9C082F2848e28E45DA6b8",
+   "chain": "ethereum",
+   "direction": "long",
+   "first_seen_ts": 1793814147,
+   "entry_price": "0.002595",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.002598",
+     "return_bps": 12
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.00282",
+     "return_bps": 867
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.002102",
+     "return_bps": -1900
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.001651",
+     "return_bps": -3638
+    }
+   ]
+  },
+  {
+   "msg_id": 6632,
+   "token_ref": "0x72bE1277E198D0C476869253Cb4E62807e14533c",
+   "chain": "robinhood",
+   "direction": "long",
+   "first_seen_ts": 1793825848,
+   "entry_price": "0.00284",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.00284",
+     "return_bps": 0
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.002701",
+     "return_bps": -489
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.00268",
+     "return_bps": -563
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.002423",
+     "return_bps": -1468
+    }
+   ]
+  },
+  {
+   "msg_id": 6634,
+   "token_ref": "0x1826a42F92cF86992cF007e061ad5cAC67666666",
+   "chain": "robinhood",
+   "direction": "long",
+   "first_seen_ts": 1793825909,
+   "entry_price": "0.00002943",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.00002943",
+     "return_bps": 0
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.00003629",
+     "return_bps": 2331
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.00004052",
+     "return_bps": 3768
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.00002477",
+     "return_bps": -1583
+    }
+   ]
+  },
+  {
+   "msg_id": 6638,
+   "token_ref": "0x1C65D3160e4e5ee5E6a11E0542061999Fce77777",
+   "chain": "bsc",
+   "direction": "long",
+   "first_seen_ts": 1793843552,
+   "entry_price": "0.00001217",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.00001832",
+     "return_bps": 5053
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.000007411",
+     "return_bps": -3910
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.000007388",
+     "return_bps": -3929
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.000004749",
+     "return_bps": -6098
+    }
+   ]
+  },
+  {
+   "msg_id": 6641,
+   "token_ref": "0xFd0bb211d479710dFa01d3d98751767F51edb2d9",
+   "chain": "ethereum",
+   "direction": "long",
+   "first_seen_ts": 1793855224,
+   "entry_price": "0.0000000002021",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.0000000002061",
+     "return_bps": 198
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.0000000002061",
+     "return_bps": 198
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.0000000002011",
+     "return_bps": -49
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.0000000001399",
+     "return_bps": -3078
+    }
+   ]
+  },
+  {
+   "msg_id": 6644,
+   "token_ref": "0x6511c233790Ec10f7d673c64DC82C3F941D57828",
+   "chain": "robinhood",
+   "direction": "long",
+   "first_seen_ts": 1793864045,
+   "entry_price": "0.0009284",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.0009233",
+     "return_bps": -55
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.0008321",
+     "return_bps": -1037
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.0005986",
+     "return_bps": -3552
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.000778",
+     "return_bps": -1620
+    }
+   ]
+  },
+  {
+   "msg_id": 6646,
+   "token_ref": "0x5e948189807Ad655Dd0D180F2E3Df3fA1d03CF05",
+   "chain": "robinhood",
+   "direction": "long",
+   "first_seen_ts": 1793869537,
+   "entry_price": "0.00002594",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.00002594",
+     "return_bps": 0
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.00002839",
+     "return_bps": 944
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.00003148",
+     "return_bps": 2136
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.00002881",
+     "return_bps": 1106
+    }
+   ]
+  },
+  {
+   "msg_id": 6649,
+   "token_ref": "0x1Bc5bca317DCc077F07fF339e5ce648237A77777",
+   "chain": "bsc",
+   "direction": "long",
+   "first_seen_ts": 1793871407,
+   "entry_price": "0.000006343",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.00000705",
+     "return_bps": 1115
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.00000533",
+     "return_bps": -1597
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.000005164",
+     "return_bps": -1859
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.00000379",
+     "return_bps": -4025
+    }
+   ]
+  },
+  {
+   "msg_id": 6655,
+   "token_ref": "0xb0007D59fE4050A1636c2fa19038973d16481337",
+   "chain": "robinhood",
+   "direction": "long",
+   "first_seen_ts": 1793886765,
+   "entry_price": "0.04025",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.04079",
+     "return_bps": 134
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.04124",
+     "return_bps": 246
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.0337",
+     "return_bps": -1627
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.03446",
+     "return_bps": -1439
+    }
+   ]
+  },
+  {
+   "msg_id": 6659,
+   "token_ref": "0x4C8DCDf04BE19D7c3668969784ABC6C9004ADbA3",
+   "chain": "base",
+   "direction": "long",
+   "first_seen_ts": 1793892095,
+   "entry_price": "0.000000551",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.0000004877",
+     "return_bps": -1149
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.0000003303",
+     "return_bps": -4005
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.000000287",
+     "return_bps": -4791
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.0000002732",
+     "return_bps": -5042
+    }
+   ]
+  },
+  {
+   "msg_id": 6667,
+   "token_ref": "0x8490ACd2d52D0Ebd34CB13E01Bd9a9380b36411D",
+   "chain": "robinhood",
+   "direction": "long",
+   "first_seen_ts": 1793903940,
+   "entry_price": "0.0002743",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.00009732",
+     "return_bps": -6452
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.0001625",
+     "return_bps": -4076
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.00003128",
+     "return_bps": -8860
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.00004247",
+     "return_bps": -8452
+    }
+   ]
+  },
+  {
+   "msg_id": 6670,
+   "token_ref": "0xeC98D315c098E01DbEF66eee09Ca6d686B3f9Cb6",
+   "chain": "robinhood",
+   "direction": "long",
+   "first_seen_ts": 1793904223,
+   "entry_price": "0.00007504",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.00004295",
+     "return_bps": -4276
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.00005043",
+     "return_bps": -3280
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.000005538",
+     "return_bps": -9262
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.000004757",
+     "return_bps": -9366
+    }
+   ]
+  },
+  {
+   "msg_id": 6673,
+   "token_ref": "0x345953CD9f35d4F53320FB78547b4f782028CcCc",
+   "chain": "base",
+   "direction": "long",
+   "first_seen_ts": 1793904686,
+   "entry_price": "0.00006645",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.0000176",
+     "return_bps": -7351
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.00001319",
+     "return_bps": -8015
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.000004748",
+     "return_bps": -9285
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.000004273",
+     "return_bps": -9357
+    }
+   ]
+  },
+  {
+   "msg_id": 6676,
+   "token_ref": "0x384b028739f8b2c5D187Bca0bBe20bd04D72F00d",
+   "chain": "robinhood",
+   "direction": "long",
+   "first_seen_ts": 1793908406,
+   "entry_price": "0.0001046",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.0001031",
+     "return_bps": -143
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.00009823",
+     "return_bps": -609
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.0001492",
+     "return_bps": 4264
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.0001651",
+     "return_bps": 5784
+    }
+   ]
+  },
+  {
+   "msg_id": 6679,
+   "token_ref": "0x7a9194934E9e87689DfbB18a36d844BA737EA731",
+   "chain": "robinhood",
+   "direction": "long",
+   "first_seen_ts": 1793911109,
+   "entry_price": "0.0001136",
+   "outcomes": [
+    {
+     "horizon": "15m",
+     "exit_price": "0.00009994",
+     "return_bps": -1202
+    },
+    {
+     "horizon": "1h",
+     "exit_price": "0.00004701",
+     "return_bps": -5862
+    },
+    {
+     "horizon": "6h",
+     "exit_price": "0.00002703",
+     "return_bps": -7621
+    },
+    {
+     "horizon": "24h",
+     "exit_price": "0.000007544",
+     "return_bps": -9336
+    }
+   ]
+  }
+ ]
+}

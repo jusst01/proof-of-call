@@ -1,0 +1,161 @@
+[oracle] seed call 0: entry 0.000005305
+[oracle] seed call 0: 15m -> -1962 bps
+[oracle] seed call 0: 1h -> -2618 bps
+[oracle] seed call 0: 6h -> -2630 bps
+[oracle] seed call 0: 24h -> -2484 bps
+[oracle] seed 6603|0x8De39B057CC6522230AB19C0205080a8663331Ef: registered as call 1
+[oracle] seed call 1: entry 0.00000004827
+[oracle] seed call 1: 15m -> +12 bps
+[oracle] seed call 1: 1h -> +286 bps
+[oracle] seed call 1: 6h -> +338 bps
+[oracle] seed call 1: 24h -> -116 bps
+[oracle] seed 6605|0x9CB6a9859Faa69c7374166b1383c7b4Ddea71111: registered as call 2
+[oracle] seed call 2: entry 0.00008053
+[oracle] seed call 2: 15m -> +0 bps
+[oracle] seed call 2: 1h -> +79 bps
+[oracle] seed call 2: 6h -> +1539 bps
+[oracle] seed call 2: 24h -> -7579 bps
+[oracle] seed 6608|0xA4Cd53f32336f820E787C25AAa2dF64Aa0A64444: registered as call 3
+[oracle] seed call 3: entry 0.000005756
+[oracle] seed call 3: 15m -> -368 bps
+[oracle] seed call 3: 1h -> -21 bps
+[oracle] seed call 3: 6h -> -961 bps
+[oracle] seed call 3: 24h -> -594 bps
+[oracle] seed 6611|0x58B2931F2Bf31d2A6299E4F987C1d7ac6a967777: registered as call 4
+[oracle] seed call 4: entry 0.00007063
+[oracle] seed call 4: 15m -> -4960 bps
+[oracle] seed call 4: 1h -> -5894 bps
+[oracle] seed call 4: 6h -> -8635 bps
+[oracle] seed call 4: 24h -> -9326 bps
+[oracle] seed 6614|0xB1C3a6ac90E324c4072aD4B2a71c5d9382F9565c: registered as call 5
+[oracle] seed call 5: entry 0.0000008769
+[oracle] seed call 5: 15m -> -576 bps
+[oracle] seed call 5: 1h -> +5156 bps
+[oracle] seed call 5: 6h -> +8474 bps
+[oracle] seed call 5: 24h -> +2955 bps
+[oracle] seed 6617|0xB1C3a6ac90E324c4072aD4B2a71c5d9382F9565c: registered as call 6
+[oracle] seed call 6: entry 0.000002036
+[oracle] seed call 6: 15m -> -1523 bps
+[oracle] seed call 6: 1h -> -2613 bps
+[oracle] seed call 6: 6h -> -737 bps
+[oracle] seed call 6: 24h -> -3703 bps
+[oracle] seed 6620|0xEf50274Cfe89D3BBddD52544f2f1a0EF15a3259f: registered as call 7
+[oracle] seed call 7: entry 0.0003575
+[oracle] seed call 7: 15m -> -2492 bps
+[oracle] seed call 7: 1h -> -982 bps
+[oracle] seed call 7: 6h -> -3564 bps
+[oracle] seed call 7: 24h -> -2109 bps
+[oracle] seed 6624|0x63b5C2B1eB93Ad62EA06560370f4f317eE1b97D3: registered as call 8
+[oracle] seed call 8: entry 0.0001247
+[oracle] seed call 8: 15m -> -609 bps
+[oracle] seed call 8: 1h -> -4977 bps
+[oracle] seed call 8: 6h -> -7507 bps
+[oracle] seed call 8: 24h -> -9340 bps
+[oracle] seed 6629|0x1b54E762aa34CF6E28E9C082F2848e28E45DA6b8: registered as call 9
+[oracle] seed call 9: entry 0.002595
+[oracle] seed call 9: 15m -> +12 bps
+[oracle] seed call 9: 1h -> +867 bps
+[oracle] seed call 9: 6h -> -1900 bps
+[oracle] seed call 9: 24h -> -3638 bps
+[oracle] seed 6632|0x72bE1277E198D0C476869253Cb4E62807e14533c: registered as call 10
+[oracle] seed call 10: entry 0.00284
+[oracle] seed call 10: 15m -> +0 bps
+[oracle] seed call 10: 1h -> -489 bps
+[oracle] seed call 10: 6h -> -563 bps
+[oracle] seed call 10: 24h -> -1468 bps
+[oracle] seed 6634|0x1826a42F92cF86992cF007e061ad5cAC67666666: registered as call 11
+[oracle] seed call 11: entry 0.00002943
+[oracle] seed call 11: 15m -> +0 bps
+[oracle] seed call 11: 1h -> +2331 bps
+[oracle] seed call 11: 6h -> +3768 bps
+[oracle] seed call 11: 24h -> -1583 bps
+[oracle] seed 6638|0x1C65D3160e4e5ee5E6a11E0542061999Fce77777: registered as call 12
+[oracle] seed call 12: entry 0.00001217
+[oracle] seed call 12: 15m -> +5053 bps
+[oracle] seed call 12: 1h -> -3910 bps
+[oracle] seed call 12: 6h -> -3929 bps
+[oracle] seed call 12: 24h -> -6098 bps
+[oracle] seed 6641|0xFd0bb211d479710dFa01d3d98751767F51edb2d9: registered as call 13
+[oracle] seed call 13: entry 0.0000000002021
+[oracle] seed call 13: 15m -> +198 bps
+[oracle] seed call 13: 1h -> +198 bps
+[oracle] seed call 13: 6h -> -49 bps
+Traceback (most recent call last):
+  File "/home/hatch/workspace/proof-of-call/oracle/seed.py", line 102, in <module>
+    main()
+  File "/home/hatch/workspace/proof-of-call/oracle/seed.py", line 85, in main
+    if not oracle.near_write("record_outcome", {
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hatch/workspace/proof-of-call/oracle/oracle.py", line 102, in near_write
+    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=180)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/usr/lib/python3.12/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'near'
+[oracle] seed call 13: 24h -> -3078 bps
+[oracle] seed 6644|0x6511c233790Ec10f7d673c64DC82C3F941D57828: registered as call 14
+[oracle] seed call 14: entry 0.0009284
+[oracle] seed call 14: 15m -> -55 bps
+[oracle] seed call 14: 1h -> -1037 bps
+[oracle] seed call 14: 6h -> -3552 bps
+[oracle] seed call 14: 24h -> -1620 bps
+[oracle] seed 6646|0x5e948189807Ad655Dd0D180F2E3Df3fA1d03CF05: registered as call 15
+[oracle] seed call 15: entry 0.00002594
+[oracle] seed call 15: 15m -> +0 bps
+[oracle] seed call 15: 1h -> +944 bps
+[oracle] seed call 15: 6h -> +2136 bps
+[oracle] seed call 15: 24h -> +1106 bps
+[oracle] seed 6649|0x1Bc5bca317DCc077F07fF339e5ce648237A77777: registered as call 16
+[oracle] seed call 16: entry 0.000006343
+[oracle] seed call 16: 15m -> +1115 bps
+[oracle] seed call 16: 1h -> -1597 bps
+[oracle] seed call 16: 6h -> -1859 bps
+[oracle] seed call 16: 24h -> -4025 bps
+[oracle] seed 6655|0xb0007D59fE4050A1636c2fa19038973d16481337: registered as call 17
+[oracle] seed call 17: entry 0.04025
+[oracle] seed call 17: 15m -> +134 bps
+[oracle] seed call 17: 1h -> +246 bps
+[oracle] seed call 17: 6h -> -1627 bps
+[oracle] seed call 17: 24h -> -1439 bps
+[oracle] seed 6659|0x4C8DCDf04BE19D7c3668969784ABC6C9004ADbA3: registered as call 18
+[oracle] seed call 18: entry 0.000000551
+[oracle] seed call 18: 15m -> -1149 bps
+[oracle] seed call 18: 1h -> -4005 bps
+[oracle] seed call 18: 6h -> -4791 bps
+[oracle] seed call 18: 24h -> -5042 bps
+[oracle] seed 6667|0x8490ACd2d52D0Ebd34CB13E01Bd9a9380b36411D: registered as call 19
+[oracle] seed call 19: entry 0.0002743
+[oracle] seed call 19: 15m -> -6452 bps
+[oracle] seed call 19: 1h -> -4076 bps
+[oracle] seed call 19: 6h -> -8860 bps
+[oracle] seed call 19: 24h -> -8452 bps
+[oracle] seed 6670|0xeC98D315c098E01DbEF66eee09Ca6d686B3f9Cb6: registered as call 20
+[oracle] seed call 20: entry 0.00007504
+[oracle] seed call 20: 15m -> -4276 bps
+[oracle] seed call 20: 1h -> -3280 bps
+[oracle] seed call 20: 6h -> -9262 bps
+[oracle] seed call 20: 24h -> -9366 bps
+[oracle] seed 6673|0x345953CD9f35d4F53320FB78547b4f782028CcCc: registered as call 21
+[oracle] seed call 21: entry 0.00006645
+[oracle] seed call 21: 15m -> -7351 bps
+[oracle] seed call 21: 1h -> -8015 bps
+[oracle] seed call 21: 6h -> -9285 bps
+[oracle] seed call 21: 24h -> -9357 bps
+[oracle] seed 6676|0x384b028739f8b2c5D187Bca0bBe20bd04D72F00d: registered as call 22
+[oracle] seed call 22: entry 0.0001046
+[oracle] seed call 22: 15m -> -143 bps
+[oracle] seed call 22: 1h -> -609 bps
+[oracle] seed call 22: 6h -> +4264 bps
+[oracle] seed call 22: 24h -> +5784 bps
+[oracle] seed 6679|0x7a9194934E9e87689DfbB18a36d844BA737EA731: registered as call 23
+[oracle] seed call 23: entry 0.0001136
+[oracle] seed call 23: 15m -> -1202 bps
+[oracle] seed call 23: 1h -> -5862 bps
+[oracle] seed call 23: 6h -> -7621 bps
+[oracle] seed call 23: 24h -> -9336 bps
+[oracle] seed complete: 24/24 calls fully written
