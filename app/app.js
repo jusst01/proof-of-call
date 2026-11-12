@@ -64,6 +64,56 @@
     return 'flat';
   }
   function fmtHit(bps) { return (bps / 100).toFixed(1) + '%'; }
+  function fmtMoney(v) {
+    var neg = v < 0;
+    var txt = Math.abs(v).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return (neg ? '-$' : '$') + txt;
+  }
+
+  // ------------------------------------------------- follower simulation
+  // $100 on every scored call, exited at the 24h outcome where recorded,
+  // else at the call's latest recorded horizon. A call can lose at most
+  // its $100. Computed purely from the on-chain outcomes already loaded.
+  var EXIT_ORDER = ['24h', '6h', '1h', '15m'];
+  function simulateFollower(callList) {
+    var sim = { n: 0, fallback: 0, staked: 0, final: 0 };
+    callList.forEach(function (c) {
+      var byHorizon = {};
+      (c.outcomes || []).forEach(function (o) { byHorizon[o.horizon] = o; });
+      var pick = null;
+      for (var i = 0; i < EXIT_ORDER.length; i++) {
+        if (byHorizon[EXIT_ORDER[i]]) { pick = byHorizon[EXIT_ORDER[i]]; break; }
+      }
+      if (!pick) return; // unscored call — nothing to simulate yet
+      if (pick.horizon !== '24h') sim.fallback++;
+      sim.n++;
+      sim.staked += 100;
+      sim.final += Math.max(0, 100 * (1 + pick.return_bps / 10000));
+    });
+    sim.net = sim.final - sim.staked;
+    return sim;
+  }
+
+  // Pool every caller's contract stats into one all-callers baseline.
+  function fieldStats() {
+    var wins = 0, outcomes = 0, weighted = 0, any = false;
+    state.callers.forEach(function (acct) {
+      var s = state.statsByCaller[acct];
+      if (!s || !s.total_outcomes) return;
+      any = true;
+      wins += s.wins || 0;
+      outcomes += s.total_outcomes;
+      weighted += (s.avg_return_bps || 0) * s.total_outcomes;
+    });
+    if (!any) return null;
+    return {
+      // Truncate, mirroring the contract's integer math, so the strip
+      // always agrees with the per-caller rows to the last digit.
+      hitRateBps: Math.floor(wins * 10000 / outcomes),
+      avgBps: Math.trunc(weighted / outcomes),
+      outcomes: outcomes,
+    };
+  }
   function fmtDateFromNs(ns) {
     // ns timestamps exceed Number.MAX_SAFE_INTEGER; seconds precision is
     // all the UI needs and survives the float conversion.
@@ -169,17 +219,33 @@
       return (b.s.total_outcomes || 0) - (a.s.total_outcomes || 0) ||
              (b.s.hit_rate_bps || 0) - (a.s.hit_rate_bps || 0);
     });
-    var html = '<table class="board"><thead><tr>' +
+    var field = fieldStats();
+    var fieldSim = simulateFollower(state.calls);
+    var html = '';
+    if (field && fieldSim.n) {
+      html += '<div class="bench">📊 <b>The field — every caller combined:</b> hit rate ' +
+        fmtHit(field.hitRateBps) + ' · avg return <span class="' + clsBps(field.avgBps) + '">' +
+        fmtBps(field.avgBps) + '</span> · $100 on every scored call → <b>' + fmtMoney(fieldSim.final) +
+        '</b> back from ' + fmtMoney(fieldSim.staked) + ' staked' +
+        '<span class="bench-note">This is the base rate every caller below is read against — the average call on this record loses money; beating the field means losing less, or actually winning.</span></div>';
+    }
+    html += '<table class="board"><thead><tr>' +
       '<th>Caller</th><th>Calls</th><th>Scored</th><th>Hit rate</th><th>Avg return</th><th>Best call</th>' +
       '</tr></thead><tbody>';
     rows.forEach(function (r) {
       var s = r.s;
+      var marker = '';
+      if (field && s.total_outcomes) {
+        if (s.avg_return_bps > field.avgBps) marker = ' <span class="vsfield pos" title="Above the all-caller average return">▲</span>';
+        else if (s.avg_return_bps < field.avgBps) marker = ' <span class="vsfield neg" title="Below the all-caller average return">▼</span>';
+        else marker = ' <span class="vsfield flat" title="Exactly the all-caller average return">●</span>';
+      }
       html += '<tr data-caller="' + escapeHtml(r.acct) + '" class="lb-row' + (r.acct === state.focus ? ' focused' : '') + '">' +
         '<td>' + callerLabel(r.acct) + '</td>' +
         '<td>' + (s.total_calls != null ? s.total_calls : '—') + '</td>' +
         '<td>' + (s.scored_calls != null ? s.scored_calls : '—') + '</td>' +
         '<td>' + (s.total_outcomes ? fmtHit(s.hit_rate_bps) : '—') + '</td>' +
-        '<td class="' + clsBps(s.avg_return_bps) + '">' + (s.total_outcomes ? fmtBps(s.avg_return_bps) : '—') + '</td>' +
+        '<td class="' + clsBps(s.avg_return_bps) + '">' + (s.total_outcomes ? fmtBps(s.avg_return_bps) + marker : '—') + '</td>' +
         '<td class="' + clsBps(s.best_return_bps) + '">' + (s.total_outcomes ? fmtBps(s.best_return_bps) : '—') + '</td>' +
         '</tr>';
     });
@@ -222,6 +288,24 @@
             '<td class="' + clsBps(h.avg_return_bps) + '">' + (h.outcomes ? fmtBps(h.avg_return_bps) : '—') + '</td></tr>';
         });
         html += '</tbody></table>';
+      }
+      var sim = simulateFollower(myCalls);
+      if (sim.n) {
+        var netPct = sim.staked ? (sim.net / sim.staked * 100) : 0;
+        var basisNote = sim.fallback
+          ? sim.fallback + ' of ' + sim.n + ' calls exited at their latest recorded horizon (24h not yet recorded); the rest at 24h.'
+          : 'Exit at the 24h outcome for all ' + sim.n + ' calls.';
+        html += '<div class="followersim">' +
+          '<div class="fs-label">💸 If you had followed every call</div>' +
+          '<div class="fs-big">$100 on each of ' + sim.n + ' scored calls → <b class="' + clsBps(sim.net) + '">' +
+            fmtMoney(sim.final) + '</b></div>' +
+          '<div class="fs-sub">from ' + fmtMoney(sim.staked) + ' staked · net <span class="' + clsBps(sim.net) + '">' +
+            fmtMoney(sim.net) + ' (' + (netPct > 0 ? '+' : '') + netPct.toFixed(2) + '%)</span></div>' +
+          '<p class="fs-note">Simulation computed from the on-chain outcomes below — $100 per scored call, a call can lose at most its $100. ' +
+            basisNote + ' Unscored calls are excluded.</p>' +
+          '</div>';
+      } else {
+        html += '<p class="hint">No scored calls yet — the $100-per-call follower simulation starts once the oracle records this caller’s first outcomes.</p>';
       }
     }
     html += '<div class="calls">' + (myCalls.length ? myCalls.map(callCard).join('') : '<p class="hint">No calls loaded for this caller.</p>') + '</div>';
