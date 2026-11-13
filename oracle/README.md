@@ -19,7 +19,7 @@ Idempotent — safe to re-run any time. Writes go through near-cli-rs
 ## Seed (already done — historical import)
 
 - `paper-source.jsonl` — read-only pull of `/root/tg-listener/paper.jsonl`
-  from VPS .102 (`tg-tracker.service`, Pumpfun Callouts, since 2026-11-03).
+  from VPS .102 (`tg-tracker.service`, Channel A, since 2026-11-03).
 - `extract_seed.py` → `seed-data.json`: 24 complete t0+15m/1h/6h/24h series,
   prices/outcomes verbatim from the tracker file.
 - `seed.py` → registered them on-chain as calls 0–23 from the dev account and

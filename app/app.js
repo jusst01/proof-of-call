@@ -4,16 +4,16 @@
  *
  * HONESTY RULES baked into this UI:
  *  - Calls 0–24 (caller opengraspdev.testnet) are the IMPORTED v1 record:
- *    the 24 Pumpfun Callouts imports plus the BONK call (registered live on
+ *    the 24 Channel A imports plus the BONK call (registered live on
  *    v1), imported into v2 on deployment. They are labelled as imported
  *    history everywhere — never as live v2 calls. Their original calls
  *    happened 2026-11-03 → 2026-11-11 via a live tracker running since
  *    2026-11-03.
  *  - On 2026-11-13 the imported record was EXPANDED from the same still-
  *    running tracker: calls 26–66 (same caller) are every remaining matured
- *    Pumpfun Callouts call through 2026-11-13, and calls 67–68 under caller
+ *    Channel A call through 2026-11-13, and calls 67–68 under caller
  *    parkers.opengraspdev.testnet are the matured first-mention calls of the
- *    second tracked channel, PARKERSDIARY (tracked since 2026-11-11) — a
+ *    second tracked channel, Channel B (tracked since 2026-11-11) — a
  *    distinct imported profile.
  *  - Call id 25 is the first LIVE v2 call (bonded, structured). Any other
  *    call not in the imported sets above was registered live on v2 and is
@@ -34,9 +34,9 @@
   var RPC_URL = 'https://test.rpc.fastnear.com';
   var EXPLORER = 'https://testnet.nearblocks.io/address/' + CONTRACT_ID;
   var IMPORTED_CALLER = 'opengraspdev.testnet';
-  var IMPORTED_MAX_ID = 24; // ids 0..24 = imported v1 record (24 Pumpfun + BONK)
-  var EXPANSION_MAX_ID = 66; // ids 26..66 = Pumpfun Callouts expansion, imported 2026-11-13
-  var PARKERS_CALLER = 'parkers.opengraspdev.testnet'; // ids 67..68 = PARKERSDIARY imported profile
+  var IMPORTED_MAX_ID = 24; // ids 0..24 = imported v1 record (24 Channel A + BONK)
+  var EXPANSION_MAX_ID = 66; // ids 26..66 = Channel A expansion, imported 2026-11-13
+  var PARKERS_CALLER = 'parkers.opengraspdev.testnet'; // ids 67..68 = Channel B imported profile
   var HORIZONS = ['15m', '1h', '6h', '24h'];
 
   var VERDICT_LABELS = {
@@ -169,9 +169,9 @@
   // Short source wording for imported cards (null for the v1-record range,
   // whose wording is handled separately in callCard).
   function importSource(call) {
-    if (call.caller === PARKERS_CALLER) return 'PARKERSDIARY record';
+    if (call.caller === PARKERS_CALLER) return 'Channel B record';
     if (call.caller === IMPORTED_CALLER && call.id > IMPORTED_MAX_ID) {
-      return 'Pumpfun Callouts record';
+      return 'Channel A record';
     }
     return null;
   }
@@ -303,10 +303,10 @@
   // --------------------------------------------------------------- renders
   function callerLabel(acct) {
     if (acct === IMPORTED_CALLER) {
-      return escapeHtml(acct) + ' <span class="badge imported">IMPORTED TRACK RECORD — “Pumpfun Callouts”</span>';
+      return escapeHtml(acct) + ' <span class="badge imported">IMPORTED TRACK RECORD — CHANNEL A</span>';
     }
     if (acct === PARKERS_CALLER) {
-      return escapeHtml(acct) + ' <span class="badge imported">IMPORTED TRACK RECORD — “PARKERSDIARY (parkertoshi)”</span>';
+      return escapeHtml(acct) + ' <span class="badge imported">IMPORTED TRACK RECORD — CHANNEL B</span>';
     }
     return escapeHtml(acct);
   }
@@ -393,7 +393,7 @@
       .sort(function (a, b) { return b.id - a.id; });
     var html = '<h3 class="profile-name">' + callerLabel(acct) + '</h3>';
     if (acct === IMPORTED_CALLER) {
-      html += '<div class="notice">This profile is the <b>imported track record of the Telegram channel “Pumpfun Callouts”</b>, ' +
+      html += '<div class="notice">This profile is the <b>imported track record of Channel A — a private Telegram call channel</b>, ' +
         'from a live listener + DexScreener tracker that has run since 2026-11-03. Ids 0–24 were first imported on-chain on ' +
         '2026-11-11 (the 24 tracked calls plus the BONK call that was registered live on v1) and carried into v2 as seeded ' +
         'history; ids 26–66 were added on 2026-11-13 — every remaining matured tracked call. Those are historical records — ' +
@@ -401,8 +401,8 @@
         '(bonded, structured) registered by this operator account and labelled LIVE. Original calls: 2026-11-03 → 2026-11-13.</div>';
     }
     if (acct === PARKERS_CALLER) {
-      html += '<div class="notice">This profile is the <b>imported track record of the Telegram channel “PARKERSDIARY” ' +
-        '(parkertoshi)</b>, tracked by the same live listener + DexScreener tracker since 2026-11-11 and imported on-chain ' +
+      html += '<div class="notice">This profile is the <b>imported track record of Channel B — a Telegram trading-diary ' +
+        'channel</b>, tracked by the same live listener + DexScreener tracker since 2026-11-11 and imported on-chain ' +
         'on 2026-11-13. The diary repeats tokens and posts watchlist notes, so the record uses a <b>first-mention = entry</b> ' +
         'convention: one call per token, at its first mention, and only calls whose 24h outcome has matured are imported. ' +
         'The profile grows as more of the channel’s calls mature.</div>';
