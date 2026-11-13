@@ -9,8 +9,15 @@
  *    history everywhere — never as live v2 calls. Their original calls
  *    happened 2026-11-03 → 2026-11-11 via a live tracker running since
  *    2026-11-03.
- *  - Any call with id ≥ 25 was registered live on v2 through this page (or
- *    the same contract flow) and is labelled live.
+ *  - On 2026-11-13 the imported record was EXPANDED from the same still-
+ *    running tracker: calls 26–66 (same caller) are every remaining matured
+ *    Pumpfun Callouts call through 2026-11-13, and calls 67–68 under caller
+ *    parkers.opengraspdev.testnet are the matured first-mention calls of the
+ *    second tracked channel, PARKERSDIARY (tracked since 2026-11-11) — a
+ *    distinct imported profile.
+ *  - Call id 25 is the first LIVE v2 call (bonded, structured). Any other
+ *    call not in the imported sets above was registered live on v2 and is
+ *    labelled live.
  *  - The v1 contract (proofofcall.opengraspdev.testnet) stays live as the
  *    preserved v1 archive; v2 never rewrites it.
  *
@@ -28,6 +35,8 @@
   var EXPLORER = 'https://testnet.nearblocks.io/address/' + CONTRACT_ID;
   var IMPORTED_CALLER = 'opengraspdev.testnet';
   var IMPORTED_MAX_ID = 24; // ids 0..24 = imported v1 record (24 Pumpfun + BONK)
+  var EXPANSION_MAX_ID = 66; // ids 26..66 = Pumpfun Callouts expansion, imported 2026-11-13
+  var PARKERS_CALLER = 'parkers.opengraspdev.testnet'; // ids 67..68 = PARKERSDIARY imported profile
   var HORIZONS = ['15m', '1h', '6h', '24h'];
 
   var VERDICT_LABELS = {
@@ -152,7 +161,19 @@
     return 'https://dexscreener.com/search?q=' + encodeURIComponent(call.token_ref);
   }
   function isImported(call) {
-    return call.caller === IMPORTED_CALLER && call.id <= IMPORTED_MAX_ID;
+    if (call.caller === PARKERS_CALLER) return true;
+    if (call.caller !== IMPORTED_CALLER) return false;
+    return call.id <= IMPORTED_MAX_ID ||
+      (call.id > IMPORTED_MAX_ID + 1 && call.id <= EXPANSION_MAX_ID);
+  }
+  // Short source wording for imported cards (null for the v1-record range,
+  // whose wording is handled separately in callCard).
+  function importSource(call) {
+    if (call.caller === PARKERS_CALLER) return 'PARKERSDIARY record';
+    if (call.caller === IMPORTED_CALLER && call.id > IMPORTED_MAX_ID) {
+      return 'Pumpfun Callouts record';
+    }
+    return null;
   }
 
   // ------------------------------------------------------------- call cards
@@ -211,7 +232,9 @@
       '<span class="badge status">' + escapeHtml(call.status.replace('_', ' ')) + '</span>' +
       bondBadge(call) + verdictBadge(call);
     var when = imported
-      ? 'Historical call · v1 record imported into v2'
+      ? (importSource(call)
+          ? 'Historical call · ' + importSource(call) + ' · imported from the live tracker 2026-11-13'
+          : 'Historical call · v1 record imported into v2')
       : 'Registered ' + fmtDateFromNs(call.registered_at_ns);
     var html = '<article class="call">' +
       '<div class="call-head"><span class="call-id">Call #' + call.id + '</span>' + badges + '</div>' +
@@ -262,8 +285,9 @@
       state.calls = calls;
       var seen = {};
       calls.forEach(function (c) { seen[c.caller] = true; });
-      // The seeded caller leads even if a newer call pushed them out of view.
+      // The seeded callers lead even if a newer call pushed them out of view.
       seen[IMPORTED_CALLER] = true;
+      seen[PARKERS_CALLER] = true;
       state.callers = Object.keys(seen);
       return Promise.all(state.callers.map(function (acct) {
         return Promise.all([
@@ -280,6 +304,9 @@
   function callerLabel(acct) {
     if (acct === IMPORTED_CALLER) {
       return escapeHtml(acct) + ' <span class="badge imported">IMPORTED TRACK RECORD — “Pumpfun Callouts”</span>';
+    }
+    if (acct === PARKERS_CALLER) {
+      return escapeHtml(acct) + ' <span class="badge imported">IMPORTED TRACK RECORD — “PARKERSDIARY (parkertoshi)”</span>';
     }
     return escapeHtml(acct);
   }
@@ -367,10 +394,18 @@
     var html = '<h3 class="profile-name">' + callerLabel(acct) + '</h3>';
     if (acct === IMPORTED_CALLER) {
       html += '<div class="notice">This profile is the <b>imported track record of the Telegram channel “Pumpfun Callouts”</b>, ' +
-        'first imported on-chain on 2026-11-11 from a live listener + DexScreener tracker that has run since 2026-11-03, and ' +
-        'carried into v2 as seeded history. The calls below (ids 0–24 — the 24 tracked calls plus the BONK call that was ' +
-        'registered live on v1) are historical records — they were <b>not</b> registered live on v2. Live v2 calls start at ' +
-        'id 25. Original calls: 2026-11-03 → 2026-11-11.</div>';
+        'from a live listener + DexScreener tracker that has run since 2026-11-03. Ids 0–24 were first imported on-chain on ' +
+        '2026-11-11 (the 24 tracked calls plus the BONK call that was registered live on v1) and carried into v2 as seeded ' +
+        'history; ids 26–66 were added on 2026-11-13 — every remaining matured tracked call. Those are historical records — ' +
+        'they were <b>not</b> registered live on v2. One call below is different: <b>id 25 is a live v2 proof call</b> ' +
+        '(bonded, structured) registered by this operator account and labelled LIVE. Original calls: 2026-11-03 → 2026-11-13.</div>';
+    }
+    if (acct === PARKERS_CALLER) {
+      html += '<div class="notice">This profile is the <b>imported track record of the Telegram channel “PARKERSDIARY” ' +
+        '(parkertoshi)</b>, tracked by the same live listener + DexScreener tracker since 2026-11-11 and imported on-chain ' +
+        'on 2026-11-13. The diary repeats tokens and posts watchlist notes, so the record uses a <b>first-mention = entry</b> ' +
+        'convention: one call per token, at its first mention, and only calls whose 24h outcome has matured are imported. ' +
+        'The profile grows as more of the channel’s calls mature.</div>';
     }
     html += '<div class="linkedbox"><div class="fs-label">🔗 Linked wallets</div>' + linkedListHtml(acct, false) + '</div>';
     if (s) {
