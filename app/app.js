@@ -1,25 +1,42 @@
-/* Proof of Call — read layer + UI.
- * All data comes from view calls against the testnet contract via
+/* Proof of Call — read layer + UI (v2).
+ * All data comes from view calls against the v2 testnet contract via
  * https://test.rpc.fastnear.com. No backend, no build step.
  *
  * HONESTY RULES baked into this UI:
- *  - Calls 0–23 (caller opengraspdev.testnet) are IMPORTED historical records
- *    of the tracked Telegram channel "Pumpfun Callouts", imported 2026-11-11
- *    from a live tracker running since 2026-11-03. They are labelled as such
- *    everywhere they appear — never as live-registered calls. Their on-chain
- *    timestamp is the import time; the original calls happened 2026-11-03 → 11.
- *  - Call 24 (BONK, Solana) is a genuine LIVE registration, labelled live.
- *  - Any other call registered through this page is live by construction.
+ *  - Calls 0–24 (caller opengraspdev.testnet) are the IMPORTED v1 record:
+ *    the 24 Pumpfun Callouts imports plus the BONK call (registered live on
+ *    v1), imported into v2 on deployment. They are labelled as imported
+ *    history everywhere — never as live v2 calls. Their original calls
+ *    happened 2026-11-03 → 2026-11-11 via a live tracker running since
+ *    2026-11-03.
+ *  - Any call with id ≥ 25 was registered live on v2 through this page (or
+ *    the same contract flow) and is labelled live.
+ *  - The v1 contract (proofofcall.opengraspdev.testnet) stays live as the
+ *    preserved v1 archive; v2 never rewrites it.
+ *
+ * v2 call fields handled here (all nullable on imported calls — rendering
+ * must not break when they are null): target_price, invalidation_price,
+ * thesis, bond_status, wallet_verdict; outcomes gain target_hit /
+ * invalidation_hit (nullable booleans).
  */
 (function () {
   'use strict';
 
-  var CONTRACT_ID = 'proofofcall.opengraspdev.testnet';
+  var CONTRACT_ID = 'proofofcallv2.opengraspdev.testnet';
+  var V1_CONTRACT_ID = 'proofofcall.opengraspdev.testnet';
   var RPC_URL = 'https://test.rpc.fastnear.com';
   var EXPLORER = 'https://testnet.nearblocks.io/address/' + CONTRACT_ID;
   var IMPORTED_CALLER = 'opengraspdev.testnet';
-  var IMPORTED_MAX_ID = 23; // ids 0..23 = imported Pumpfun Callouts history
+  var IMPORTED_MAX_ID = 24; // ids 0..24 = imported v1 record (24 Pumpfun + BONK)
   var HORIZONS = ['15m', '1h', '6h', '24h'];
+
+  var VERDICT_LABELS = {
+    bought_before: 'wallet bought before the call',
+    holds: 'wallet still holds',
+    sold_after: 'wallet sold after the call',
+    no_activity: 'no wallet activity found',
+    unknown: 'wallet check pending/unavailable',
+  };
 
   var $ = function (id) { return document.getElementById(id); };
 
@@ -27,6 +44,11 @@
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (ch) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
     });
+  }
+
+  function connectedAccount() {
+    var w = window.PoCWallet ? window.PoCWallet.getState() : null;
+    return w ? w.account : null;
   }
 
   // ------------------------------------------------------------------- RPC
@@ -144,31 +166,92 @@
     }).join('');
   }
 
+  // Per-horizon target / invalidation stamps from the v2 outcome fields.
+  // target_hit / invalidation_hit are nullable — null means "not judged"
+  // (no target/invalidation set, or horizon not written by a v2 oracle).
+  function hitStamps(call) {
+    var byHorizon = {};
+    (call.outcomes || []).forEach(function (o) { byHorizon[o.horizon] = o; });
+    var stamps = [];
+    HORIZONS.forEach(function (h) {
+      var o = byHorizon[h];
+      if (!o) return;
+      if (o.target_hit === true) stamps.push('<span class="stamp hit">' + h + ' · 🎯 target hit</span>');
+      else if (o.target_hit === false) stamps.push('<span class="stamp miss">' + h + ' · target missed</span>');
+      if (o.invalidation_hit === true) stamps.push('<span class="stamp bad">' + h + ' · ✖ invalidated</span>');
+      else if (o.invalidation_hit === false) stamps.push('<span class="stamp ok">' + h + ' · not invalidated</span>');
+    });
+    return stamps.length ? '<div class="hits">' + stamps.join('') + '</div>' : '';
+  }
+
+  function bondBadge(call) {
+    var st = call.bond_status;
+    if (!st || st === 'none') return '<span class="badge bond-none">no bond</span>';
+    if (st === 'locked') return '<span class="badge bond-locked">🔒 bond locked · 0.1 NEAR</span>';
+    if (st === 'claimable') return '<span class="badge bond-claimable">✅ bond claimable · 0.1 NEAR</span>';
+    if (st === 'claimed') return '<span class="badge bond-claimed">💸 bond claimed</span>';
+    if (st === 'forfeited') return '<span class="badge bond-forfeited">☠ bond forfeited</span>';
+    return '<span class="badge">' + escapeHtml(st) + '</span>';
+  }
+
+  function verdictBadge(call) {
+    var v = call.wallet_verdict;
+    if (!v) return '';
+    var label = VERDICT_LABELS[v] || v;
+    return '<span class="badge verdict">👛 ' + escapeHtml(label) + '</span>';
+  }
+
   function callCard(call) {
     var imported = isImported(call);
-    var live = !imported;
+    var mine = connectedAccount() && connectedAccount() === call.caller;
     var badges =
       '<span class="badge dir-' + escapeHtml(call.direction) + '">' + escapeHtml(call.direction.toUpperCase()) + '</span>' +
       '<span class="badge chain">' + escapeHtml(call.chain) + '</span>' +
       (imported ? '<span class="badge imported">IMPORTED RECORD</span>' : '<span class="badge live">● LIVE</span>') +
-      '<span class="badge status">' + escapeHtml(call.status.replace('_', ' ')) + '</span>';
+      '<span class="badge status">' + escapeHtml(call.status.replace('_', ' ')) + '</span>' +
+      bondBadge(call) + verdictBadge(call);
     var when = imported
-      ? 'Historical call · imported on-chain 2026-11-11'
+      ? 'Historical call · v1 record imported into v2'
       : 'Registered ' + fmtDateFromNs(call.registered_at_ns);
-    return '<article class="call">' +
+    var html = '<article class="call">' +
       '<div class="call-head"><span class="call-id">Call #' + call.id + '</span>' + badges + '</div>' +
       '<div class="call-token"><a href="' + dexLink(call) + '" target="_blank" rel="noopener" title="' + escapeHtml(call.token_ref) + '">' +
         escapeHtml(shortRef(call.token_ref)) + '</a>' +
         '<span class="call-caller">by ' + escapeHtml(call.caller) + '</span></div>' +
       '<div class="call-meta">' + when +
         (call.entry_price ? ' · entry <b>' + escapeHtml(call.entry_price) + '</b> (set by oracle)' : ' · entry price pending (oracle)') +
-        ' · receipt NFT <code>' + escapeHtml(call.receipt_token_id) + '</code></div>' +
-      '<div class="chips">' + outcomeChips(call) + '</div>' +
-      '</article>';
+        ' · receipt NFT <code>' + escapeHtml(call.receipt_token_id) + '</code></div>';
+    if (call.thesis) {
+      html += '<div class="thesis">💬 “' + escapeHtml(call.thesis) + '”</div>';
+    }
+    if (call.target_price || call.invalidation_price) {
+      html += '<div class="levels">' +
+        (call.target_price ? '<span>🎯 target <b>' + escapeHtml(call.target_price) + '</b></span>' : '') +
+        (call.invalidation_price ? '<span>✖ invalidation <b>' + escapeHtml(call.invalidation_price) + '</b></span>' : '') +
+        '</div>';
+    }
+    html += '<div class="chips">' + outcomeChips(call) + '</div>' + hitStamps(call);
+    if (call.bond_status === 'claimable' && mine) {
+      html += '<div class="call-actions"><button type="button" class="claimbtn" data-claim-bond="' + call.id + '">Claim bond · 0.1 NEAR</button>' +
+        '<span class="hint">Your 24h score is in and the call did not lose ≥50% — the bond is yours to claim back.</span></div>';
+    }
+    html += '</article>';
+    return html;
   }
 
   // ------------------------------------------------------------------ data
-  var state = { calls: [], callers: [], statsByCaller: {}, focus: IMPORTED_CALLER };
+  var state = {
+    calls: [], callers: [], statsByCaller: {}, linkedByCaller: {},
+    focus: IMPORTED_CALLER, myLinkedFor: null,
+  };
+
+  function fetchLinked(acct) {
+    return view('get_linked_wallets', { account: acct }).then(function (list) {
+      state.linkedByCaller[acct] = Array.isArray(list) ? list : [];
+    }).catch(function () {
+      if (!state.linkedByCaller[acct]) state.linkedByCaller[acct] = [];
+    });
+  }
 
   function loadAll() {
     return Promise.all([
@@ -183,9 +266,12 @@
       seen[IMPORTED_CALLER] = true;
       state.callers = Object.keys(seen);
       return Promise.all(state.callers.map(function (acct) {
-        return view('get_caller_stats', { account: acct }).then(function (s) {
-          state.statsByCaller[acct] = s;
-        }).catch(function () { state.statsByCaller[acct] = null; });
+        return Promise.all([
+          view('get_caller_stats', { account: acct }).then(function (s) {
+            state.statsByCaller[acct] = s;
+          }).catch(function () { state.statsByCaller[acct] = null; }),
+          fetchLinked(acct),
+        ]);
       }));
     }).then(function () { renderAll(); });
   }
@@ -196,6 +282,19 @@
       return escapeHtml(acct) + ' <span class="badge imported">IMPORTED TRACK RECORD — “Pumpfun Callouts”</span>';
     }
     return escapeHtml(acct);
+  }
+
+  function linkedListHtml(acct, withUnlink) {
+    var list = state.linkedByCaller[acct];
+    if (!list) return '<p class="hint">Loading linked wallets…</p>';
+    if (!list.length) return '<p class="hint">No linked wallets.</p>';
+    return '<ul class="linked">' + list.map(function (w) {
+      var btn = withUnlink
+        ? ' <button type="button" class="wbtn ghost sm" data-unlink-chain="' + escapeHtml(w.chain) + '" data-unlink-address="' + escapeHtml(w.address) + '">Unlink</button>'
+        : '';
+      return '<li><span class="badge chain">' + escapeHtml(w.chain) + '</span> <code title="' + escapeHtml(w.address) + '">' +
+        escapeHtml(shortRef(w.address)) + '</code>' + btn + '</li>';
+    }).join('') + '</ul>';
   }
 
   function renderHero() {
@@ -268,10 +367,12 @@
     var html = '<h3 class="profile-name">' + callerLabel(acct) + '</h3>';
     if (acct === IMPORTED_CALLER) {
       html += '<div class="notice">This profile is the <b>imported track record of the Telegram channel “Pumpfun Callouts”</b>, ' +
-        'imported on-chain on 2026-11-11 from a live listener + DexScreener tracker that has run since 2026-11-03. ' +
-        'The calls below (ids 0–23) are historical records — they were <b>not</b> registered live through this page. ' +
-        'Call #24 (BONK) was registered live end-to-end. Original calls: 2026-11-03 → 2026-11-11.</div>';
+        'first imported on-chain on 2026-11-11 from a live listener + DexScreener tracker that has run since 2026-11-03, and ' +
+        'carried into v2 as seeded history. The calls below (ids 0–24 — the 24 tracked calls plus the BONK call that was ' +
+        'registered live on v1) are historical records — they were <b>not</b> registered live on v2. Live v2 calls start at ' +
+        'id 25. Original calls: 2026-11-03 → 2026-11-11.</div>';
     }
+    html += '<div class="linkedbox"><div class="fs-label">🔗 Linked wallets</div>' + linkedListHtml(acct, false) + '</div>';
     if (s) {
       html += '<div class="statgrid">' +
         '<div class="stat"><b>' + s.total_calls + '</b><span>calls</span></div>' +
@@ -317,9 +418,25 @@
     $('feed').innerHTML = sorted.map(callCard).join('') || '<p class="hint">No calls yet.</p>';
   }
 
+  function renderMyWallets() {
+    var sec = $('myWallets');
+    if (!sec) return;
+    var acct = connectedAccount();
+    if (!acct) { sec.hidden = true; state.myLinkedFor = null; return; }
+    sec.hidden = false;
+    $('myWalletList').innerHTML = linkedListHtml(acct, true);
+    if (state.myLinkedFor !== acct) {
+      state.myLinkedFor = acct;
+      fetchLinked(acct).then(function () {
+        renderMyWallets();
+        if (state.focus === acct) renderProfile();
+      });
+    }
+  }
+
   function renderAll() {
-    renderHero(); renderLeaderboard(); renderProfile(); renderFeed();
-    $('loadState').textContent = 'Live from NEAR testnet · contract ' + CONTRACT_ID;
+    renderHero(); renderLeaderboard(); renderProfile(); renderFeed(); renderMyWallets();
+    $('loadState').textContent = 'Live from NEAR testnet · contract ' + CONTRACT_ID + ' (v2) · v1 archive: ' + V1_CONTRACT_ID;
   }
 
   // -------------------------------------------------------------- register
@@ -337,27 +454,122 @@
       btn.disabled = false;
       note.textContent = 'Signing as ' + w.account + '. Your call is timestamped by the block — it cannot be backdated, edited, or deleted.';
     }
+    // Wallet identity drives claim buttons + the linked-wallets section.
+    renderMyWallets();
+    if (state.calls.length) { renderProfile(); renderFeed(); }
   }
 
   function initForm() {
-    var form = $('regForm');
-    form.addEventListener('submit', function (ev) {
+    var thesis = $('fThesis');
+    var counter = $('fThesisCount');
+    if (thesis && counter) {
+      thesis.addEventListener('input', function () {
+        counter.textContent = thesis.value.length + ' / 280';
+      });
+    }
+    $('regForm').addEventListener('submit', function (ev) {
       ev.preventDefault();
       var chain = $('fChain').value;
       var tokenRef = $('fToken').value.trim();
       var direction = $('fDirection').value;
+      var target = $('fTarget').value.trim();
+      var invalidation = $('fInvalidation').value.trim();
+      var thesisVal = thesis.value.trim();
+      var bond = $('fBond').checked;
       var msg = $('regMsg');
       if (!tokenRef) { msg.textContent = 'Enter the token contract / mint address.'; return; }
+      if (thesisVal.length > 280) { msg.textContent = 'Thesis is over 280 characters — trim it first.'; return; }
       msg.textContent = 'Waiting for wallet signature…';
-      window.PoCWallet.registerCall({ chain: chain, token_ref: tokenRef, direction: direction })
+      window.PoCWallet.registerCall({
+        chain: chain, token_ref: tokenRef, direction: direction,
+        target_price: target || null, invalidation_price: invalidation || null,
+        thesis: thesisVal || null, bond: bond,
+      })
         .then(function (res) {
           msg.innerHTML = '✅ Call registered on-chain' + (res && res.txHash ? ' (tx ' + escapeHtml(res.txHash) + ')' : '') +
+            (bond ? ' with the 0.1 NEAR bond locked' : ' (no bond attached)') +
             '. The oracle will fetch the entry price from DexScreener and score this call at 15m / 1h / 6h / 24h. Refreshing…';
           setTimeout(function () { loadAll().then(setFormState); }, 2500);
         })
         .catch(function (err) {
           msg.textContent = 'Registration failed or was rejected: ' + (err && err.message ? err.message : err);
         });
+    });
+  }
+
+  function initLinkForm() {
+    var form = $('linkForm');
+    if (!form) return;
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var chain = $('lChain').value;
+      var address = $('lAddress').value.trim();
+      var msg = $('linkMsg');
+      if (!address) { msg.textContent = 'Enter the wallet address to link.'; return; }
+      msg.textContent = 'Waiting for wallet signature…';
+      window.PoCWallet.linkWallet(chain, address)
+        .then(function (res) {
+          msg.innerHTML = '✅ Wallet linked' + (res && res.txHash ? ' (tx ' + escapeHtml(res.txHash) + ')' : '') + '. Refreshing…';
+          var acct = connectedAccount();
+          if (acct) {
+            return fetchLinked(acct).then(function () {
+              renderMyWallets();
+              if (state.focus === acct) renderProfile();
+              msg.innerHTML = '✅ Wallet linked and shown below.';
+            });
+          }
+        })
+        .catch(function (err) {
+          msg.textContent = 'Link failed or was rejected: ' + (err && err.message ? err.message : err);
+        });
+    });
+  }
+
+  // Claim-bond + unlink buttons are rendered dynamically inside call cards
+  // and wallet lists, so they are wired once via delegation.
+  function initDelegatedActions() {
+    document.addEventListener('click', function (ev) {
+      var claimBtn = ev.target.closest ? ev.target.closest('[data-claim-bond]') : null;
+      if (claimBtn) {
+        var id = claimBtn.getAttribute('data-claim-bond');
+        claimBtn.disabled = true;
+        claimBtn.textContent = 'Claiming… waiting for wallet signature';
+        window.PoCWallet.claimBond(id)
+          .then(function (res) {
+            claimBtn.textContent = '✅ Bond claimed' + (res && res.txHash ? ' (tx ' + res.txHash + ')' : '');
+            setTimeout(function () { loadAll().then(setFormState); }, 2500);
+          })
+          .catch(function (err) {
+            claimBtn.disabled = false;
+            claimBtn.textContent = 'Claim bond · 0.1 NEAR';
+            window.alert('Bond claim failed or was rejected: ' + (err && err.message ? err.message : err));
+          });
+        return;
+      }
+      var unBtn = ev.target.closest ? ev.target.closest('[data-unlink-chain]') : null;
+      if (unBtn) {
+        var chain = unBtn.getAttribute('data-unlink-chain');
+        var address = unBtn.getAttribute('data-unlink-address');
+        var msg = $('linkMsg');
+        unBtn.disabled = true;
+        if (msg) msg.textContent = 'Waiting for wallet signature…';
+        window.PoCWallet.unlinkWallet(chain, address)
+          .then(function () {
+            var acct = connectedAccount();
+            if (msg) msg.textContent = '✅ Wallet unlinked. Refreshing…';
+            if (acct) {
+              return fetchLinked(acct).then(function () {
+                renderMyWallets();
+                if (state.focus === acct) renderProfile();
+                if (msg) msg.textContent = '✅ Wallet unlinked.';
+              });
+            }
+          })
+          .catch(function (err) {
+            unBtn.disabled = false;
+            if (msg) msg.textContent = 'Unlink failed or was rejected: ' + (err && err.message ? err.message : err);
+          });
+      }
     });
   }
 
@@ -372,11 +584,13 @@
         if (msg) {
           msg.innerHTML = ri.error
             ? 'Wallet returned an error: ' + escapeHtml(ri.error)
-            : '✅ Call registered on-chain (tx ' + escapeHtml(ri.txHash || '') + '). The oracle will set the entry price from DexScreener and score it at 15m / 1h / 6h / 24h.';
+            : '✅ Transaction confirmed on-chain (tx ' + escapeHtml(ri.txHash || '') + '). If this was a call registration, the oracle will set the entry price from DexScreener and score it at 15m / 1h / 6h / 24h.';
         }
       }
     }
     initForm();
+    initLinkForm();
+    initDelegatedActions();
     setFormState();
     loadAll().catch(function (err) {
       $('loadState').textContent = 'Could not reach the NEAR RPC (' + (err && err.message ? err.message : err) + '). Records are on-chain at ' + CONTRACT_ID + ' — try refreshing.';

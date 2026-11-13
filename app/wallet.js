@@ -1,23 +1,33 @@
-/* Proof of Call — NEAR wallet layer (TESTNET).
+/* Proof of Call — NEAR wallet layer (TESTNET), v2.
  *
  * Adapted from OpenGrasp's v2/wallet.js (same selector version, same
  * fail-soft philosophy):
  *   1. "Connect Wallet" button (NEAR Wallet Selector: Meteor + MyNearWallet),
- *   2. registerCall(): signs register_call(chain, token_ref, direction) on the
- *      Proof of Call contract from the USER's account — the signer becomes
- *      the caller on the permanent record.
+ *   2. registerCall(): signs register_call(...) on the v2 Proof of Call
+ *      contract from the USER's account — the signer becomes the caller on
+ *      the permanent record. Optionally attaches the 0.1 NEAR bond.
+ *   3. claimBond(callId): claims a "claimable" bond back (claim_bond).
+ *   4. linkWallet(chain, address) / unlinkWallet(chain, address): manages the
+ *      caller's linked trading wallets.
  *
  * Everything fails soft: if the CDN libraries cannot load (offline, blocked
  * CDN, no Web3 support), status becomes 'unavailable', the connect UI hides
  * itself, and the read-only app (leaderboard / profiles / feed) keeps working.
  *
- * Contract: proofofcall.opengraspdev.testnet
- *   register_call(chain: String, token_ref: String, direction: String) -> u64
+ * Contract: proofofcallv2.opengraspdev.testnet
+ *   register_call(chain, token_ref, direction,
+ *                 target_price: Option<String>,
+ *                 invalidation_price: Option<String>,
+ *                 thesis: Option<String>) -> u64
+ *     payable: attach exactly 0.1 NEAR (bonded) or 0 (unbonded); any other
+ *     amount panics on-chain. bond_amount() view returns the bond in yocto.
+ *   claim_bond(call_id) / link_wallet(chain, address) / unlink_wallet(chain, address)
  */
 (function () {
   'use strict';
 
-  var CONTRACT_ID = 'proofofcall.opengraspdev.testnet';
+  var CONTRACT_ID = 'proofofcallv2.opengraspdev.testnet';
+  var BOND_YOCTO = '100000000000000000000000'; // 0.1 NEAR == bond_amount()
   var NETWORK = 'testnet';
   var SELECTOR_VERSION = '8.9.13';
   var CDN = 'https://cdn.jsdelivr.net/npm/@near-wallet-selector';
@@ -114,7 +124,7 @@
         modal = modalJs.setupModal(selector, {
           contractId: CONTRACT_ID,
           theme: 'auto',
-          description: 'Register trading calls on-chain: the contract records YOU as the caller with the block timestamp. The oracle — never you — writes the entry price from DexScreener and scores the call at 15m / 1h / 6h / 24h.',
+          description: 'Register trading calls on-chain: the contract records YOU as the caller with the block timestamp. Add a target, an invalidation and a thesis, and optionally bond 0.1 NEAR on the call. The oracle — never you — writes the entry price from DexScreener and scores the call at 15m / 1h / 6h / 24h.',
         });
         var syncFromStore = function () {
           try {
@@ -168,37 +178,29 @@
       .then(function () { setState({ account: null, status: 'ready' }); });
   }
 
-  // --------------------------------------------------------- register a call
-  /* args: { chain, token_ref, direction }. The JSON encoding matches the
-   * contract's register_call(chain: String, token_ref: String,
-   * direction: String) -> u64. 30 TGas, no deposit. */
-  function registerCall(args) {
+  // ------------------------------------------------------- transaction core
+  /* Sign and send one FunctionCall against the v2 contract from the
+   * connected account. Resolves { txHash } for injected wallets; redirect
+   * wallets return via redirectInfo instead (txHash null here). */
+  function sendCall(methodName, args, deposit) {
     return loadLibs().then(function (sel) {
       if (!sel) throw new Error('Wallet unavailable');
       if (!state.account) throw new Error('Connect a wallet first');
       return selector.wallet();
     }).then(function (wallet) {
-      try {
-        window.localStorage.setItem(PENDING_KEY, JSON.stringify({
-          chain: args.chain, token_ref: args.token_ref, direction: args.direction, ts: Date.now(),
-        }));
-      } catch (e) { /* best-effort */ }
       return wallet.signAndSendTransaction({
         receiverId: CONTRACT_ID,
         actions: [{
           type: 'FunctionCall',
           params: {
-            methodName: 'register_call',
-            args: { chain: args.chain, token_ref: args.token_ref, direction: args.direction },
+            methodName: methodName,
+            args: args,
             gas: '30000000000000',
-            deposit: '0',
+            deposit: deposit || '0',
           },
         }],
       });
     }).then(function (outcome) {
-      try { window.localStorage.removeItem(PENDING_KEY); } catch (e) { /* ignore */ }
-      // Injected wallets (Meteor) resolve with the tx outcome; redirect
-      // wallets return undefined here and come back via redirectInfo instead.
       var txHash = null;
       try {
         if (outcome && outcome.transaction && outcome.transaction.hash) txHash = outcome.transaction.hash;
@@ -207,14 +209,67 @@
     });
   }
 
+  function optString(v) {
+    if (v === null || v === undefined) return null;
+    var s = String(v).trim();
+    return s ? s : null;
+  }
+
+  // --------------------------------------------------------- register a call
+  /* args: { chain, token_ref, direction,
+   *         target_price?, invalidation_price?, thesis?, bond? }.
+   * Optional fields are sent as null when empty (contract Option<String>).
+   * Deposit is exactly BOND_YOCTO when args.bond is truthy (the form's
+   * default) and '0' otherwise — any other amount panics on-chain. */
+  function registerCall(args) {
+    var payload = {
+      chain: args.chain,
+      token_ref: args.token_ref,
+      direction: args.direction,
+      target_price: optString(args.target_price),
+      invalidation_price: optString(args.invalidation_price),
+      thesis: optString(args.thesis),
+    };
+    var deposit = args.bond ? BOND_YOCTO : '0';
+    try {
+      window.localStorage.setItem(PENDING_KEY, JSON.stringify({
+        chain: payload.chain, token_ref: payload.token_ref, direction: payload.direction,
+        target_price: payload.target_price, invalidation_price: payload.invalidation_price,
+        thesis: payload.thesis, bond: !!args.bond, ts: Date.now(),
+      }));
+    } catch (e) { /* best-effort */ }
+    return sendCall('register_call', payload, deposit).then(function (res) {
+      try { window.localStorage.removeItem(PENDING_KEY); } catch (e) { /* ignore */ }
+      return res;
+    });
+  }
+
+  // ------------------------------------------------------------- claim bond
+  /* claim_bond(call_id) — caller claims a "claimable" bond back. No deposit. */
+  function claimBond(callId) {
+    return sendCall('claim_bond', { call_id: Number(callId) }, '0');
+  }
+
+  // ----------------------------------------------------------- linked wallets
+  function linkWallet(chain, address) {
+    return sendCall('link_wallet', { chain: chain, address: String(address).trim() }, '0');
+  }
+  function unlinkWallet(chain, address) {
+    return sendCall('unlink_wallet', { chain: chain, address: String(address).trim() }, '0');
+  }
+
   window.PoCWallet = {
     init: init,
     connect: connect,
     disconnect: disconnect,
     registerCall: registerCall,
+    claimBond: claimBond,
+    linkWallet: linkWallet,
+    unlinkWallet: unlinkWallet,
     getState: snapshot,
     redirectInfo: redirectInfo,
     onChange: function (cb) { listeners.push(cb); },
     CONTRACT_ID: CONTRACT_ID,
+    BOND_YOCTO: BOND_YOCTO,
   };
 })();

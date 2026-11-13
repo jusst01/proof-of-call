@@ -135,3 +135,54 @@ footer { border-top: 1px solid var(--line); margin-top: 44px; padding-top: 18px;
   .topbar { flex-direction: column; align-items: flex-start; }
   .stat { min-width: 45%; }
 }
+
+/* ---- v2 additions ---- */
+.vtag {
+  font-size: 12px; vertical-align: super; color: #06231a; background: var(--accent);
+  border-radius: 6px; padding: 1px 7px; font-weight: 800; letter-spacing: .4px;
+}
+.archive-note {
+  margin-top: 14px; border: 1px dashed var(--gold); border-radius: 12px;
+  padding: 12px 16px; font-size: 14px; background: var(--panel); max-width: 78ch;
+}
+.regform textarea {
+  background: var(--bg); color: var(--ink); border: 1px solid var(--line);
+  border-radius: 8px; padding: 10px 12px; font-size: 14.5px; width: 100%;
+  font-family: inherit; resize: vertical;
+}
+.regform label.wide { flex: 1 1 100%; }
+.regform .opt { color: var(--dim); font-weight: 400; text-transform: none; letter-spacing: 0; }
+.counter { align-self: flex-end; font-size: 12px; color: var(--dim); }
+.bond-toggle { flex: 1 1 100%; }
+.bond-row { display: flex; align-items: center; gap: 8px; color: var(--ink); font-size: 14.5px; font-weight: 600; }
+.bond-row input { width: auto; }
+.bond-note { color: var(--dim); font-size: 13px; max-width: 62ch; }
+
+.thesis { margin-top: 8px; font-size: 14.5px; color: #cfd8ea; font-style: italic; max-width: 72ch; }
+.levels { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 6px; font-size: 13.5px; color: var(--dim); }
+.hits { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.stamp { border-radius: 8px; padding: 3px 9px; font-size: 12.5px; font-weight: 600; border: 1px solid var(--line); color: var(--dim); }
+.stamp.hit { color: var(--pos); border-color: var(--pos); }
+.stamp.bad { color: var(--neg); border-color: var(--neg); }
+.stamp.miss, .stamp.ok { color: var(--dim); }
+
+.badge.bond-none { opacity: .65; font-weight: 500; }
+.badge.bond-locked { color: #ffd97a; border-color: var(--gold); }
+.badge.bond-claimable { color: #06231a; background: var(--accent); border-color: var(--accent); }
+.badge.bond-claimed { color: var(--dim); }
+.badge.bond-forfeited { color: #fff; background: var(--neg); border-color: var(--neg); }
+.badge.verdict { color: #c9d4ea; border-color: #4a5b85; font-weight: 600; text-transform: none; letter-spacing: 0; }
+
+.call-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.claimbtn {
+  background: var(--accent); color: #06231a; border: 0; border-radius: 8px;
+  padding: 8px 14px; font-weight: 800; cursor: pointer; font-size: 13.5px;
+}
+.claimbtn:disabled { opacity: .55; cursor: wait; }
+
+.linkedbox { margin: 10px 0 4px; }
+ul.linked { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+ul.linked li { display: flex; align-items: center; gap: 8px; font-size: 14px; flex-wrap: wrap; }
+ul.linked .badge { margin-left: 0; }
+.wbtn.sm { padding: 4px 10px; font-size: 12.5px; }
+.walletlist { margin-top: 6px; }
