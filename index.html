@@ -5,12 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Proof of Call — verifiable track records for alpha callers, on NEAR</title>
 <meta name="description" content="Callers register trading calls on-chain before the move; an oracle fetches the real entry price from DexScreener and scores every call at 15m / 1h / 6h / 24h. v2 adds structured calls (target, invalidation, thesis), a 0.1 NEAR skin-in-the-game bond, and linked-wallet verification. Permanent, unforgeable track records.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="app/style.css">
 </head>
 <body>
+<div class="rail" aria-hidden="true">
+  <div class="rail-note">APPEND-ONLY RECORD</div>
+  <div class="rail-word">PROOF—OF—CALL</div>
+  <div class="rail-mark">✓</div>
+</div>
+
 <header class="topbar">
   <div class="brand">
-    <div class="logo">📣</div>
+    <div class="logo">✓</div>
     <div>
       <h1>Proof of Call <span class="vtag">v2</span></h1>
       <p class="tagline">Don’t trust callers. <b>Verify them.</b></p>
@@ -21,6 +30,12 @@
 
 <main>
   <section class="hero">
+    <div class="kickers">
+      <span>On-chain caller scorecard</span>
+      <span class="kick-r">NEAR testnet · Est. on-chain</span>
+    </div>
+    <h2 class="mega">— Don’t trust callers. <span class="acc">Verify</span> them.</h2>
+    <p class="hero-note">Registered before the move.<br><span>The record can’t be edited.</span></p>
     <p class="lede">Alpha callers delete their misses, edit their calls, and screenshot only the wins.
       Proof of Call ends that: a caller registers a call <b>on-chain, before the move</b> — the block
       timestamp can’t be forged. An oracle fetches the entry price from DexScreener (the caller never
@@ -35,6 +50,28 @@
       at the 24h horizon, only <b>10 of 67 tracked calls won</b>.
       That is the point. Proof cuts both ways.
     </div>
+    <div class="steps" aria-label="How it works">
+      <div class="step">
+        <div class="step-no">01</div>
+        <h3>Register, with a bond</h3>
+        <p>The caller signs the call on-chain and can attach a 0.1 NEAR bond. The block timestamp is the proof — it can’t be backdated.</p>
+      </div>
+      <div class="step">
+        <div class="step-no">02</div>
+        <h3>The oracle stamps the entry</h3>
+        <p>The caller never types a price. The oracle fetches the real entry from DexScreener at registration and writes it verbatim.</p>
+      </div>
+      <div class="step">
+        <div class="step-no">03</div>
+        <h3>Scored on schedule</h3>
+        <p>Outcomes land at 15m / 1h / 6h / 24h — wins and losses alike, with target and invalidation checked at every horizon.</p>
+      </div>
+      <div class="step">
+        <div class="step-no">04</div>
+        <h3>A receipt NFT</h3>
+        <p>Every call mints a receipt NFT to the caller: portable proof of when the call was made. The record is permanent.</p>
+      </div>
+    </div>
     <div class="archive-note">
       📦 <b>v1 archive:</b> the original v1 contract record stays live and untouched at
       <a href="https://testnet.nearblocks.io/address/proofofcall.opengraspdev.testnet" target="_blank" rel="noopener"><code>proofofcall.opengraspdev.testnet</code></a>
@@ -46,17 +83,26 @@
   </section>
 
   <section id="leaderboardSec">
-    <h2>🏆 Caller leaderboard</h2>
+    <div class="sec-head">
+      <span class="sec-kick">01 · The board</span>
+      <h2>Caller leaderboard</h2>
+    </div>
     <div id="leaderboard"><p class="hint">Loading…</p></div>
   </section>
 
   <section id="profile">
-    <h2>👤 Caller profile</h2>
+    <div class="sec-head">
+      <span class="sec-kick">02 · The record</span>
+      <h2>Caller profile</h2>
+    </div>
     <div id="profileBody"><p class="hint">Loading…</p></div>
   </section>
 
   <section id="myWallets" hidden>
-    <h2>🔗 My linked wallets</h2>
+    <div class="sec-head">
+      <span class="sec-kick">Linked wallets</span>
+      <h2>My linked wallets</h2>
+    </div>
     <p class="hint">Link the trading wallets you actually call from. The oracle can then check a call against
       your wallet’s activity — did it buy before the call, does it still hold, did it sell after? Linked wallets are public, like the rest of the record.</p>
     <form id="linkForm" class="regform">
@@ -79,7 +125,10 @@
   </section>
 
   <section id="register">
-    <h2>📣 Register a call</h2>
+    <div class="sec-head">
+      <span class="sec-kick">03 · On the record</span>
+      <h2>Register a call</h2>
+    </div>
     <form id="regForm" class="regform">
       <label>Chain
         <select id="fChain">
@@ -126,13 +175,41 @@
     </div>
   </section>
 
+  <section class="featured" aria-label="Featured live call">
+    <div class="sec-head">
+      <span class="sec-kick">04 · Exhibit A</span>
+      <h2>The first live v2 call</h2>
+    </div>
+    <div class="receipt">
+      <div class="rc-head"><span>Receipt — Proof of Call</span><span>Call № 25 · ● Live</span></div>
+      <div class="rc-body">
+        <div class="rc-row"><span class="rc-label">Token</span><span class="rc-val">BONK · <a href="https://dexscreener.com/search?q=DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263" target="_blank" rel="noopener">DezXAZ8z…pPB263</a> · Solana</span></div>
+        <div class="rc-row"><span class="rc-label">Direction</span><span class="rc-val">LONG</span></div>
+        <div class="rc-row"><span class="rc-label">Entry price</span><span class="rc-val">0.000002625 — set by the oracle, never the caller</span></div>
+        <div class="rc-row"><span class="rc-label">Target</span><span class="rc-val">0.00000315600 (+20.2%)</span></div>
+        <div class="rc-row"><span class="rc-label">Invalidation</span><span class="rc-val">0.00000236700 (−9.8%)</span></div>
+        <div class="rc-row"><span class="rc-label">Bond</span><span class="rc-val">0.1 NEAR attached at registration</span></div>
+        <div class="rc-row"><span class="rc-label">Receipt NFT</span><span class="rc-val">call-25</span></div>
+        <p class="rc-thesis">“Live v2 proof call: BONK long with bond locked, structured target/invalidation set at registration.”</p>
+        <div class="rc-barcode" aria-hidden="true"></div>
+        <p class="rc-cap">Registered on-chain · tx <a href="https://testnet.nearblocks.io/txns/3Ww7nBzfFsyUHWfgHXT73QZrVQLobbb6v9c97e4PnSUa" target="_blank" rel="noopener">3Ww7nBZ…e4PnSUa</a> · NEAR testnet — scored at 15m / 1h / 6h / 24h as the outcomes land.</p>
+      </div>
+    </div>
+  </section>
+
   <section id="feedSec">
-    <h2>📰 Recent calls</h2>
+    <div class="sec-head">
+      <span class="sec-kick">05 · The feed</span>
+      <h2>Recent calls</h2>
+    </div>
     <div id="feed" class="calls"><p class="hint">Loading…</p></div>
   </section>
 
   <section id="verify">
-    <h2>🔍 How it works — and how to verify everything</h2>
+    <div class="sec-head">
+      <span class="sec-kick">06 · Verify it yourself</span>
+      <h2>How it works — and how to verify everything</h2>
+    </div>
     <ol class="how">
       <li><b>Register.</b> The caller signs <code>register_call(chain, token_ref, direction, target_price, invalidation_price, thesis)</code>, optionally attaching the 0.1 NEAR bond. The contract stores the signer and the block timestamp. That pair is the proof the call existed, then.</li>
       <li><b>Entry price.</b> Set only by the oracle, fetched from DexScreener at registration time and stored <b>verbatim</b> — compare it against the public source tick-for-tick.</li>
@@ -161,6 +238,7 @@
   </section>
 
   <footer>
+    <div class="foot-contract">proofofcallv2.opengraspdev.testnet</div>
     <p>Proof of Call v2 — built for the NEAR Hackathon (tracks: social + open). Testnet: calling is free, the record is real.
       Screenshots are not evidence. <b>Show me your Proof of Call.</b></p>
   </footer>
